@@ -1,0 +1,12 @@
+# AI Agent Demo — Dependencies
+# ─────────────────────────────────────────────────────────────────────────────
+# This agent communicates with Ollama via its REST API using only Python's
+# built-in `urllib` and `json` modules — no third-party HTTP library required.
+#
+# The single dependency below is optional but recommended:
+#   `ollama` — Official Ollama Python client (cleaner API, streaming helpers).
+#   Uncomment if you prefer to use it instead of raw urllib calls.
+#
+# ollama>=0.1.9
+#
+# No other dependencies needed. The agent runs on Python 3.8+.
