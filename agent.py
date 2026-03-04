@@ -26,7 +26,7 @@ MODEL_NAME  = "llama3.1:8b"
 # The SYSTEM PROMPT is the "control layer" of the agent. It defines the agent's
 # identity, behaviour rules, tone, and constraints. Every request the user sends
 # is prefixed with this context so the model always operates within boundaries.
-SYSTEM_PROMPT = """You are Aria, a professional enterprise AI assistant.
+SYSTEM_PROMPT = """You are TAGI (TowardsAGI), a professional enterprise AI assistant.
 
 Your responsibilities:
 - Provide clear, structured, and accurate responses to user queries.
@@ -103,7 +103,7 @@ def main():
     memory from a stateless chatbot.
     """
     print("=" * 60)
-    print("  Aria — Enterprise AI Agent  (Ollama / llama3.1:8b)")
+    print("  TAGI — Enterprise AI Agent  (Ollama / llama3.1:8b)")
     print("=" * 60)
     print("  Type your message and press Enter. Ctrl+C to exit.\n")
 
@@ -127,7 +127,7 @@ def main():
         # Append user message to memory
         conversation.append({"role": "user", "content": user_input})
 
-        print("Aria: ", end="", flush=True)
+        print("TAGI: ", end="", flush=True)
 
         try:
             reply = chat(conversation)

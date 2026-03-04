@@ -77,7 +77,7 @@ You'll see:
 
 ```
 ============================================================
-  Aria — Enterprise AI Agent  (Ollama / llama3.1:8b)
+  TAGI — Enterprise AI Agent  (Ollama / llama3.1:8b)
 ============================================================
   Type your message and press Enter. Ctrl+C to exit.
 

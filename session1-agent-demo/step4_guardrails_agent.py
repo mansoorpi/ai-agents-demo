@@ -41,7 +41,7 @@ MODEL = "llama3.1:8b"
 # ── Control Layer: Enterprise System Prompt ───────────────────────────────────
 # This is the full production-grade control layer. It defines identity,
 # response structure, and explicit refusal rules.
-SYSTEM_PROMPT = """You are Aria, a professional enterprise AI assistant.
+SYSTEM_PROMPT = """You are TAGI (TowardsAGI), a professional enterprise AI assistant.
 
 Your responsibilities:
 - Answer business, technical, and general knowledge questions clearly.
@@ -101,7 +101,7 @@ def chat(user_message: str) -> str:
 def main():
     print("=" * 56)
     print("  STEP 4 — Guardrails Agent (enterprise-ready)")
-    print("  Model:", MODEL, "| Identity: Aria")
+    print("  Model:", MODEL, "| Identity: TAGI (TowardsAGI)")
     print("=" * 56)
     print("  Full memory + system prompt rules + safety guardrail.")
     print("  Try asking something harmful to see the guardrails work.")
@@ -119,7 +119,7 @@ def main():
 
         try:
             reply = chat(user_input)
-            print(f"Aria: {reply}\n")
+            print(f"TAGI: {reply}\n")
         except Exception as e:
             # Keep memory consistent on failure
             if conversation and conversation[-1]["role"] == "user":
