@@ -1,0 +1,20 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: tagi-agent
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/minScale: '0'
+        autoscaling.knative.dev/maxScale: '3'
+    spec:
+      containers:
+        - image: REGION-docker.pkg.dev/PROJECT_ID/tagi/tagi-agent:latest
+          ports:
+            - containerPort: 8000
+          env:
+            - name: OLLAMA_URL
+              value: https://YOUR-OLLAMA-ENDPOINT/api/chat
+            - name: MODEL_NAME
+              value: llama3.1:8b
