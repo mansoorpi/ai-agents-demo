@@ -1,0 +1,2 @@
+{"question":"What is an AI agent?","expected_keywords":["tool","goal","loop"]}
+{"question":"What should an agent do when a tool returns an error?","expected_keywords":["error","retry","explain"]}
