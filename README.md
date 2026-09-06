@@ -1,137 +1,122 @@
-# 🤖 AI Agent Demo — Ollama + llama3.1:8b
+# TAGI — Agentic AI Demo
 
-A clean, minimal CLI AI agent built in Python using Ollama as the local inference backend. No LangChain, no heavy frameworks — just direct API calls, clear structure, and well-documented concepts.
+A small, inspectable **agentic AI reference project** built around a local Ollama model. The project demonstrates the mechanics behind an AI agent without hiding the orchestration inside a large framework.
 
----
+## Why this is an agent
 
-## 🧠 What makes this an Agent (not just a chatbot)?
+Unlike a one-shot chatbot, TAGI has a control layer, conversation memory, an execution loop, and an allow-listed tool registry. The model can decide that it needs a tool, the runtime executes that tool, and the result is returned to the model before the final answer is produced.
 
-| Feature | Chatbot | This Agent |
-|---|---|---|
-| **Memory** | None (stateless) | Full conversation history |
-| **Control Layer** | None | System prompt shapes identity & rules |
-| **Guardrails** | None | Secondary safety reminder injected per turn |
-| **Loop** | One-shot | Continuous, goal-oriented interaction |
-| **Extensibility** | Limited | Can be extended with tools, planning, RAG |
-
----
-
-## 📁 Project Structure
-
+```text
+User
+  |
+  v
+Agent Runtime
+  |
+  +--> LLM (Ollama)
+  |      |
+  |      +--> final answer
+  |      |
+  |      +--> tool call
+  |             |
+  |             v
+  |         Tool Registry
+  |             |
+  |             v
+  |         Tool Result
+  |             |
+  +-------------+
+        |
+        v
+   grounded answer
 ```
+
+## Current capabilities
+
+- Local LLM inference through Ollama
+- Conversation memory
+- Native model tool calling
+- Explicit tool registry and safe allow-list execution
+- Structured tool results
+- Bounded tool-execution loop to prevent runaway calls
+- Simple safety/control prompt
+- Zero heavy agent framework dependencies
+
+## Repository
+
+```text
 ai-agents-demo/
-├── agent.py          # Main agent — loop, memory, API calls, guardrails
-├── requirements.txt  # Dependencies (minimal — stdlib only)
-└── README.md         # This file
+├── agent.py          # Agent runtime and tool-calling loop
+├── tools.py          # Tool registry and tool implementations
+├── requirements.txt  # Runtime dependencies
+└── README.md
 ```
 
----
+## Quick start
 
-## ⚙️ Prerequisites
+### Prerequisites
 
-- Python **3.8+**
-- [Ollama](https://ollama.com) installed on your machine
+- Python 3.8+
+- Ollama installed and running
+- A tool-capable Ollama model
 
----
-
-## 🚀 Setup & Run
-
-### 1. Install dependencies
-
-This project uses only Python's built-in `urllib` and `json` — no pip install needed.
-
-```bash
-# Optional: create and activate a virtual environment
-python3 -m venv .venv
-source .venv/bin/activate
-
-# No additional packages required, but you can verify:
-pip install -r requirements.txt
-```
-
-### 2. Start the Ollama server
+Start Ollama and pull a suitable model:
 
 ```bash
 ollama serve
-```
-
-> Ollama runs at `http://localhost:11434` by default. Keep this terminal open.
-
-### 3. Pull the llama3.1:8b model
-
-```bash
 ollama pull llama3.1:8b
 ```
 
-This downloads the model (~4.7 GB). Only needed once.
-
-### 4. Run the agent
-
-Open a new terminal and run:
+Then run:
 
 ```bash
 python3 agent.py
 ```
 
-You'll see:
+Try a request such as:
 
-```
-============================================================
-  TAGI — Enterprise AI Agent  (Ollama / llama3.1:8b)
-============================================================
-  Type your message and press Enter. Ctrl+C to exit.
-
-You: 
+```text
+What time is it right now?
 ```
 
-### 5. Exit
+The model may request the `get_current_time` tool. The runtime executes it and feeds the structured result back into the agent loop.
 
-Press **Ctrl+C** at any time to end the session gracefully.
+## Design decisions
 
----
+### Native tool calling
 
-## 💡 Key Concepts
+The project uses Ollama's tool-calling interface directly. This makes the protocol visible: model response → tool selection → execution → tool result → model response.
 
-### System Prompt (Control Layer)
-Defined at the top of `agent.py`. This is the agent's "personality and ruleset" — it tells the model who it is, how to behave, and what to refuse. Every request is sent with this context.
+### Tool allow-list
 
-### Memory
-The `conversation` list stores the full message history. On every turn, the entire list is sent to the model so it maintains context across the whole session.
+Only functions explicitly registered in `TOOLS` can execute. Unknown tool names return an error instead of being dynamically imported or executed.
 
-### Guardrail
-A hidden safety reminder is injected at the end of the message list on every API call. It reinforces the refusal policy without polluting the visible conversation history.
+### Bounded execution
 
-### Why No LangChain?
-This demo intentionally uses the Ollama REST API directly. This makes the architecture transparent, educational, and dependency-free — ideal for understanding what frameworks abstract away.
+`MAX_TOOL_ROUNDS` limits how many tool iterations can occur for one user request. This provides a simple guard against accidental infinite agent loops.
 
----
+### Framework-light architecture
 
-## 🔄 Switching Models
+There is deliberately no LangChain or similar orchestration framework in the core runtime. The goal is to make the fundamentals understandable before introducing abstractions.
 
-Change the `MODEL_NAME` variable in `agent.py`:
+## Roadmap
 
-```python
-MODEL_NAME = "qwen2.5-coder:14b"   # or any model you've pulled
-```
+This repository is intentionally evolving toward a production-oriented AI/MLOps portfolio project.
 
----
+- [x] Agent control layer and memory
+- [x] Native tool calling
+- [x] Safe tool registry
+- [ ] Web search tool
+- [ ] Document ingestion pipeline
+- [ ] RAG and vector retrieval
+- [ ] Persistent conversation state
+- [ ] FastAPI service
+- [ ] Web UI
+- [ ] Evaluation dataset and automated evals
+- [ ] OpenTelemetry/LLM tracing
+- [ ] Docker and Docker Compose
+- [ ] CI checks
+- [ ] Cloud deployment example
 
-## 📦 Available Ollama Models (pre-pulled)
+## License
 
-| Model | Best For |
-|---|---|
-| `llama3.1:8b` | General assistant (used in this demo) |
-| `qwen2.5-coder:14b` | Code generation & review |
-| `qwen2.5-coder:32b` | Advanced code tasks |
-| `deepseek-coder:6.7b` | Lightweight code assistant |
-
----
-
-## 🛡️ Safety & Guardrails
-
-The agent is configured to:
-- Refuse harmful, illegal, or unethical requests
-- Resist prompt injection ("ignore your instructions")
-- Provide polite alternatives when declining requests
-
-These behaviours are enforced through the **system prompt** and a **transient guardrail reminder** injected per turn.
+MIT
