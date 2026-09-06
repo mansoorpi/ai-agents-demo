@@ -1,0 +1,11 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>TAGI Agent</title><style>body{font:16px system-ui;max-width:900px;margin:40px auto;padding:0 20px}textarea{width:100%;min-height:90px}button{padding:10px 16px;margin-top:8px}.msg{padding:12px;margin:10px 0;border-radius:8px;background:#f2f2f2}.src{font-size:13px}</style></head>
+<body><h1>TAGI — Agentic AI</h1><p>Local Ollama agent with tools and document retrieval.</p>
+<input id="file" type="file" accept=".pdf,.txt,.md,.csv"><button onclick="upload()">Upload document</button><div id="status"></div>
+<textarea id="q" placeholder="Ask TAGI something..."></textarea><button onclick="ask()">Ask agent</button><div id="chat"></div>
+<script>
+let history=[];
+async function upload(){const f=document.getElementById('file').files[0];if(!f)return;const fd=new FormData();fd.append('file',f);const r=await fetch('/documents',{method:'POST',body:fd});document.getElementById('status').textContent=JSON.stringify(await r.json());}
+async function ask(){const q=document.getElementById('q').value.trim();if(!q)return;const r=await fetch('/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:q,history})});const x=await r.json();document.getElementById('chat').innerHTML+=`<div class="msg"><b>You:</b> ${esc(q)}</div><div class="msg"><b>TAGI:</b> ${esc(x.response)}<div class="src">${(x.sources||[]).map(s=>`Source: ${esc(s.source)}`).join('<br>')}</div></div>`;history.push({role:'user',content:q},{role:'assistant',content:x.response});document.getElementById('q').value='';}
+function esc(s){return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+</script></body></html>
